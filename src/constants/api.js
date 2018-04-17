@@ -1,0 +1,6 @@
+export const NBA_URL = 'http://data.nba.com/data/5s/json/cms/noseason/scoreboard'
+export const NBA_STANDING_URL = 'http://data.nba.com/data/json/cms'
+export const NBA_GAME_DETAILS = 'http://data.nba.com/data/10s/json/cms/noseason/game'
+export const NBA_PLAYER_LIST = 'http://stats.nba.com/stats/commonallplayers?IsOnlyCurrentSeason=0&LeagueID=00&Season='
+export const NBA_PLAYER_DETAILS = 'http://stats.nba.com/stats/commonplayerinfo?LeagueID=00&PlayerID='
+export const NBA_PLAYER_LOG = 'http://stats.nba.com/stats/playergamelog?LeagueID=00&PerMode=PerGame&PlayerID='
