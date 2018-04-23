@@ -7,6 +7,8 @@ import GamePanel from './screens/components/game/GamePanel';
 import GameDetails from './screens/components/game/GameDetails';
 import PlayerIndex from './screens/components/player/PlayerIndex';
 import PlayerDetails from './screens/components/player/PlayerDetails';
+import TeamList from './screens/components/team/TeamList';
+import TeamDetails from './screens/components/team/TeamDetails';
 
 // register all screens of the app (including internal ones)
 export function registerScreens(store, Provider) {
@@ -17,4 +19,6 @@ export function registerScreens(store, Provider) {
 	Navigation.registerComponent('nba.GameDetails', () => GameDetails,store,Provider);
 	Navigation.registerComponent('nba.PlayerIndex', () => PlayerIndex,store,Provider);
 	Navigation.registerComponent('nba.PlayerDetails', () => PlayerDetails,store,Provider);
+	Navigation.registerComponent('nba.TeamList', () => TeamList,store,Provider);
+	Navigation.registerComponent('nba.TeamDetails', () => TeamDetails,store,Provider);
 }

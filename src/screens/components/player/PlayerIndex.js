@@ -157,6 +157,7 @@ class PlayerIndex extends Component{
 					dataSource = {myDataSource}
 					renderRow = {this.renderRow}
 					style = {styles.list}
+					enableEmptySections={true}
 				/>
 			</View>
 		);

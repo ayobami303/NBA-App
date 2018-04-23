@@ -4,3 +4,7 @@ export const NBA_GAME_DETAILS = 'http://data.nba.com/data/10s/json/cms/noseason/
 export const NBA_PLAYER_LIST = 'http://stats.nba.com/stats/commonallplayers?IsOnlyCurrentSeason=0&LeagueID=00&Season='
 export const NBA_PLAYER_DETAILS = 'http://stats.nba.com/stats/commonplayerinfo?LeagueID=00&PlayerID='
 export const NBA_PLAYER_LOG = 'http://stats.nba.com/stats/playergamelog?LeagueID=00&PerMode=PerGame&PlayerID='
+export const NBA_TEAM_RANK = 'http://stats.nba.com/stats/scoreboard?DayOffset=0&LeagueID=00&gameDate='
+export const NBA_TEAM_INFO = 'http://stats.nba.com/stats/teaminfocommon?LeagueID=00&SeasonType=Regular+Season&TeamID='
+export const NBA_TEAM_DETAILS = 'http://stats.nba.com/stats/teamplayerdashboard?DateFrom=&DateTo=&GameSegment=&LastNGames=0&LeagueID=00&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PaceAdjust=N&PerMode=PerGame&Period=0&PlusMinus=N&Rank=N&Season='
+export const NBA_TEAM_DETAILS_BASICS = 'http://stats.nba.com/stats/commonteamroster?LeagueID=00&Season='

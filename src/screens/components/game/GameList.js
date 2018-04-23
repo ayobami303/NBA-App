@@ -55,7 +55,7 @@ class GameList extends Component{
   		})
 
 		const gameCount = _.size(rows) 
-		let computedHeight = 125 * gameCount
+		let computedHeight = 135 * gameCount
   		getTabHeight('game', computedHeight)
 
 

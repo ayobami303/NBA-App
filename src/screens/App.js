@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {View, StatusBar, TouchableHighlight, RefreshControl, Text, ScrollView, StyleSheet} from 'react-native'
+import {View, StatusBar, TouchableHighlight, RefreshControl, Text, ScrollView, StyleSheet, Dimensions} from 'react-native'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import PropTypes from 'prop-types'
@@ -11,6 +11,8 @@ import GameList from './components/game/GameList'
 import GameHeader from './components/game/GameHeader'
 import PlayerHeader from './components/player/PlayerHeader'
 import PlayerIndex from './components/player/PlayerIndex'
+import TeamHeader from './components/team/TeamHeader'
+import TeamList from './components/team/TeamList'
 import * as applicationAction from '../actions/application'
 import * as gameActions from '../actions/game'
 import * as playerActions from '../actions/player'
@@ -27,26 +29,18 @@ class App extends Component{
 			isRefreshing: false,
 			playerList: [],
 			text:'',
-			dataSource: {}			
+			dataSource: {},
+			conference: 'western'			
 		}
-		this.gameTabHeight = 200
+		this.gameTabHeight = Dimensions.get('window').height - 110
+		this.playerTabHeight = Dimensions.get('window').height - 110
+		this.teamTabHeight = Dimensions.get('window').height - 140
+
 		// alert(JSON.stringify(this.props.gameActions.changeTab('game', 270)))
 	}
 
 	componentDidMount(){		
 		this._retrieveGameGeneral()	
-	}
-
-	componentWillMount(){
-		// this._retrieveGameGeneral()
-	}
-
-	componentWillReceiveProps(nextProps){
-		// nextProps.gameActions.getLeagueStanding();
-		// alert(JSON.stringify(nextProps));
-		// this.setState({
-		// 	tab: nextProps.application.tab
-		// })
 	}
 
 	_retrieveGameGeneral = (isRefreshed) => {
@@ -56,8 +50,13 @@ class App extends Component{
 	}	
 
 	_getTabHeight = (tabName, height) => {
-		// if( tabName === 'game') this.setState({gameTabHeight: height})
+		if( tabName === 'game') {
+			// this.setState({gameTabHeight: height})
 			this.gameTabHeight = height
+		}
+
+		if(tabName === 'player') this.playerTabHeight = height
+		// if(tabName === 'team') this.teamTabHeight = height
 		// alert(height)		
 	}
 
@@ -147,6 +146,17 @@ class App extends Component{
 		}
 	}
 
+	scrollEnd = (x, y) => {
+		if (x === 0) {
+			this.setState({
+				conference:'western'
+			})
+		} else {
+			this.setState({
+				conference:'eastern'
+			})
+		}
+	}
 
 
 	render() {
@@ -158,18 +168,18 @@ class App extends Component{
 
 		let height;
 		if(this.state.tab === 0){
-			height = (this.gameTabHeight !== 0) ? this.gameTabHeight : 200;
+			height = this.gameTabHeight;
 			bgColor = '#3471ae'
 		}
 
 		if(this.state.tab === 1){
-			height = this.gameTabHeight;
+			height = this.playerTabHeight;
 			bgColor = '#BD4C29'
 		}
 
 		if(this.state.tab === 2){
-			height = this.gameTabHeight;
-			bgColor = '#BD4C29'
+			height = this.teamTabHeight;
+			bgColor = '#1C8929'
 		}
 		// alert(height)
 		return (
@@ -178,19 +188,7 @@ class App extends Component{
                     backgroundColor="#5A9EE3"
                     barStyle="light-content"
                 />
-				<ScrollView
-					refreshControl = {
-						<RefreshControl 
-							refreshing = {this.state.isRefreshing}
-							onRefresh = {this._onRefresh.bind(this)}
-							colors = {['#354BD4']}
-							tintColor = 'white'
-							title = 'loading...'
-							titleColor = 'white'
-							progressBackgroundColor = 'white'
-						/>
-					}
-				>
+				<ScrollView>
 					{
 						tab === 0 && 
 						<GameHeader {...game} action= {gameActions} date = {this.state.date} changeDate = {this._changeDate} />
@@ -198,8 +196,14 @@ class App extends Component{
 
 					{
 						tab === 1 && 
-						<PlayerHeader {...game} text={text} onInput = {this.onInput} />
-					}				
+						<PlayerHeader text={text} onInput = {this.onInput} />
+					}
+
+					{
+						tab === 2 && 
+						<TeamHeader conference ={this.state.conference} />
+					}
+
 					<View style={[{height}]}>
 						<ScrollableTabView
 							initialPage={0}
@@ -229,7 +233,13 @@ class App extends Component{
 								getTabHeight= {this._getTabHeight} 
 								navigator= {this.props.navigator} 
 							/>
-							<GameList tabLabel = "Team" {...game} action= {gameActions} />
+							<TeamList 
+								tabLabel = "Team" 
+								scrollEnd={this.scrollEnd}
+								conference ={this.state.conference}
+								getTabHeight= {this._getTabHeight} 
+								navigator= {this.props.navigator}
+							/>
 						</ScrollableTabView>
 					</View>
 				</ScrollView>
