@@ -4,6 +4,7 @@ import axios from 'axios'
 
 import {NBA_TEAM_INFO, NBA_TEAM_DETAILS, NBA_TEAM_DETAILS_BASICS} from '../../../constants/api'
 import * as producers from '../../../utils/producers'
+import TeamDetailPlayer from './TeamDetailPlayer'
 
 const listHeight = Dimensions.get('window').height - 30 - 90 - 35
 
@@ -29,14 +30,20 @@ class TeamDetails extends Component {
 		
 
 		this.state = {
+			team: {},
 			dataSource,
-			data:{}
+			data: {}
 		}
 
 	}
 
 	renderRow = (player, _, index) =>{
 		const {navigator, id} = this.props
+		const {team} = this.state
+
+		return(
+			<TeamDetailPlayer />
+		)
 
 	}
 
@@ -47,8 +54,16 @@ class TeamDetails extends Component {
 			Promise.resolve(this.getTeamInfo(id))
 			.then(()=>{
 				Promise.resolve(this.getTeamDetails(id))
-				.then(()=>{
-
+				.then(()=>{					
+					// alert(JSON.stringify(this.state.data))
+					const {data, dataSource} = this.state
+					if(data[id] && data[id].players){
+						dataSourceNew = dataSource.cloneWithRows(data[id].players)
+					}
+					this.setState({
+						dataSource: dataSourceNew,
+						team: data[id]
+					})
 				})
 			})
 		})
@@ -76,9 +91,19 @@ class TeamDetails extends Component {
 			.then(res=>producers.teamDetailsBasics(res.data))
 		])
 		.then(result =>{
-				alert(JSON.stringify(result[1]))						
-				const details = result[0]
-				const detailsBasics = result[1]
+			const details = result[0]
+			const detailsBasics = result[1]
+
+			const data = details.map((player) =>{
+				return Object.assign({}, player, detailsBasics[player.id])
+			})
+			let prevData = this.state.data
+			prevData[id].players = data
+			// alert(JSON.stringify(prevData))	
+
+			this.setState({
+				data: prevData
+			})
 		})
 		
 	}
@@ -124,7 +149,7 @@ class TeamDetails extends Component {
 
 				<ListView 
 					dataSource = {dataSource}
-					renderRow = {this.reanderRow}
+					renderRow = {this.renderRow}
 					style = {styles.listview}
 				/>
 			</View>
