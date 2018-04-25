@@ -5,8 +5,9 @@ import axios from 'axios'
 import {NBA_TEAM_INFO, NBA_TEAM_DETAILS, NBA_TEAM_DETAILS_BASICS} from '../../../constants/api'
 import * as producers from '../../../utils/producers'
 import TeamDetailPlayer from './TeamDetailPlayer'
+import teamMap from '../../../utils/team-map'
 
-const listHeight = Dimensions.get('window').height - 30 - 90 - 35
+const listHeight = Dimensions.get('window').height - 40 - 110 - 40
 
 const d = new Date();
 const currentMonth = d.getMonth() + 1
@@ -32,7 +33,8 @@ class TeamDetails extends Component {
 		this.state = {
 			team: {},
 			dataSource,
-			data: {}
+			data: {},
+			isLoaded: false
 		}
 
 	}
@@ -40,9 +42,10 @@ class TeamDetails extends Component {
 	renderRow = (player, _, index) =>{
 		const {navigator, id} = this.props
 		const {team} = this.state
-
+		const isLast = index === (team.players.length - 1)
+		// alert (JSON.stringify(isLast))
 		return(
-			<TeamDetailPlayer />
+			<TeamDetailPlayer player = {player} isLast = {isLast} team = {team} key = {index} navigator = {navigator} />
 		)
 
 	}
@@ -55,14 +58,15 @@ class TeamDetails extends Component {
 			.then(()=>{
 				Promise.resolve(this.getTeamDetails(id))
 				.then(()=>{					
-					// alert(JSON.stringify(this.state.data))
 					const {data, dataSource} = this.state
 					if(data[id] && data[id].players){
 						dataSourceNew = dataSource.cloneWithRows(data[id].players)
 					}
+					// alert(JSON.stringify(data[id]))
 					this.setState({
 						dataSource: dataSourceNew,
-						team: data[id]
+						team: data[id],
+						isLoaded: true
 					})
 				})
 			})
@@ -75,8 +79,8 @@ class TeamDetails extends Component {
 		return axios.get(`${NBA_TEAM_INFO}${id}&season=${season}`)
 		.then(res =>{
 			const info = producers.teamInfo(res.data)
-			// alert(JSON.stringify(info))
 			data[id] = info
+			// alert(JSON.stringify(data))
 			this.setState({
 				data
 			})
@@ -111,47 +115,52 @@ class TeamDetails extends Component {
 
 	render() {
 
-		const {dataSource} = this.state
+		const {dataSource, data, team} = this.state
+		// alert(JSON.stringify(team))
 		return (
-			<View style = {styles.container} >
-				<View style = {[styles.header, {backgroundColor:'blue'} ]} >
-					<View style = {styles.headerTeam} >
-						<Text style = {styles.headerTeamCity} >Team city</Text>
-						<Text style = {styles.headerTeamName} >Team name</Text>
+			<View>
+			{ this.state.isLoaded && 
+				<View style = {styles.container} >
+					<View style = {[styles.header, {backgroundColor: teamMap[team.teamAbbr.toLowerCase()].color} ]} >
+						<View style = {styles.headerTeam} >
+							<Text style={styles.headerTeamCity} >{team.teamCity}</Text>
+							<Text style = {styles.headerTeamName} >{team.teamName}</Text>
+						</View>
+						<View style = {styles.headerLogo} >
+							<Image style = {styles.headerLogoImage} source={teamMap[team.teamAbbr.toLowerCase()].logo} />
+						</View>
+						<View style = {styles.headerRank}>
+							<Text style = {styles.headerRankResult} >{ team.win + 'W -' + team.loss + 'L'} </Text>
+							<Text style = {styles.headerRankConf} >{ '#' + team.confRank + ' in the ' + team.teamConf + ' Conference' } </Text>
+							<Text style = {styles.headerRankDivi} >{ '#' + team.diviRank + ' in the ' + team.teamDivi + ' Division ' }</Text>
+						</View>
 					</View>
-					<View style = {styles.headerLogo} >
-						<Image style = {styles.headerLogoImage} source={{uri:'http://via.placeholder.com/50x50'}} />
+					<View style = {styles.dataInfo} >
+						<View style = {styles.dataInfoItem} >
+							<Text style = {styles.itemLabel} >PPG</Text>
+							<Text style = {styles.itemData} >{ team.ptsRank + 'th' }</Text>
+						</View>
+						<View style = {styles.dataInfoItem} >
+							<Text style = {styles.itemLabel} >RPG</Text>
+							<Text style = {styles.itemData} >{ team.rebRank + 'th' }</Text>
+						</View>
+						<View style = {styles.dataInfoItem} >
+							<Text style = {styles.itemLabel} >APG</Text>
+							<Text style = {styles.itemData} >{ team.astRank + 'th' }</Text>
+						</View>
+						<View style = {styles.dataInfoItem} >
+							<Text style = {styles.itemLabel} >OPPG</Text>
+							<Text style = {styles.itemData} >{ team.oppRank + 'th' }</Text>
+						</View>
 					</View>
-					<View style = {styles.headerRank}>
-						<Text style = {styles.headerRankResult} > 22 W - 12 L </Text>
-						<Text style = {styles.headerRankConf} > # 2 in the eastern Conference </Text>
-						<Text style = {styles.headerRankDivi} > # 2 in the 2nd Division </Text>
-					</View>
-				</View>
-				<View style = {styles.dataInfo} >
-					<View style = {styles.dataInfoItem} >
-						<Text style = {styles.itemLabel} >PPG</Text>
-						<Text style = {styles.itemData} >4th</Text>
-					</View>
-					<View style = {styles.dataInfoItem} >
-						<Text style = {styles.itemLabel} >RPG</Text>
-						<Text style = {styles.itemData} >4th</Text>
-					</View>
-					<View style = {styles.dataInfoItem} >
-						<Text style = {styles.itemLabel} >APG</Text>
-						<Text style = {styles.itemData} >4th</Text>
-					</View>
-					<View style = {styles.dataInfoItem} >
-						<Text style = {styles.itemLabel} >OPPG</Text>
-						<Text style = {styles.itemData} >4th</Text>
-					</View>
-				</View>
 
-				<ListView 
-					dataSource = {dataSource}
-					renderRow = {this.renderRow}
-					style = {styles.listview}
-				/>
+					<ListView 
+						dataSource = {dataSource}
+						renderRow = {this.renderRow}
+						style = {styles.listview}
+					/>
+				</View>
+			}
 			</View>
 		);
 	}	
@@ -244,7 +253,7 @@ const styles = StyleSheet.create({
 		top: 2
 	},
 	listview:{
-	backgroundColor: '#f4f4f4'		,
+	backgroundColor: '#f4f4f4',
 	height: listHeight
 	}
 })

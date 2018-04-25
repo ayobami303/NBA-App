@@ -227,7 +227,7 @@ export function teamInfo(res){
 		teamName: info[3],
 		teamAbbr: info[4],
 		teamConf: info[5],
-		teamDive: info[6],
+		teamDivi: info[6],
 		confRank: info[11],
 		diviRank: info[12],
 		win: info[8],
